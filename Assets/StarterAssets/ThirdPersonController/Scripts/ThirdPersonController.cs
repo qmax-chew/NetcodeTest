@@ -16,6 +16,7 @@ namespace StarterAssets
 #endif
 	public class ThirdPersonController : Unity.Netcode.NetworkBehaviour
 	{
+		
 		[Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 2.0f;
@@ -139,11 +140,11 @@ namespace StarterAssets
 				float mouseInputY = Input.GetAxis("Mouse Y") * 300;
 				_input.look = new Vector2(mouseInputX, mouseInputY);
 				SetJumpInputServerRpc(Input.GetKeyDown(KeyCode.Space));
-				SetCameraAngleServerRpc(_mainCamera.transform.eulerAngles.y);
-				Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
-				Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + mouseInputX + "y:" + mouseInputY);
+                SetCameraAngleServerRpc(_mainCamera.transform.eulerAngles.y);
+                //Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
+                //Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + mouseInputX + "y:" + mouseInputY);
 
-			}
+            }
 
 			if (this.IsServer)
 			{
