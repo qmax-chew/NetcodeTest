@@ -5,12 +5,17 @@ using UnityEngine.UI;
 using TMPro;
 using System.Threading.Tasks;
 using Steamworks;
+using Netcode;
 
 public class NetworkUI : MonoBehaviour
 {
     public TMP_InputField hostSteamID;
     public TextMeshProUGUI ownerSteamID;
     bool showID = false;
+    [SerializeField]
+    private Netcode.Transports.Facepunch.FacepunchTransport facepunchTransport;
+
+
     public void StartHost()
     {
         Unity.Netcode.NetworkManager.Singleton.StartHost();
@@ -24,6 +29,10 @@ public class NetworkUI : MonoBehaviour
 
     public void StartClient()
     {
+        if (facepunchTransport != null)
+        {
+            facepunchTransport.targetSteamId = ulong.Parse(hostSteamID.text);
+        }
         Unity.Netcode.NetworkManager.Singleton.StartClient();
     }
 

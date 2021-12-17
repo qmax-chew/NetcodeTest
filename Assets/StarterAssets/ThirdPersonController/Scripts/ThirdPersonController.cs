@@ -53,7 +53,6 @@ namespace StarterAssets
 		[Header("Cinemachine")]
 		[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
 		public GameObject CinemachineCameraTarget;
-		public GameObject PlayerVirtualCamera;
 		[Tooltip("How far in degrees can you move the camera up")]
 		public float TopClamp = 70.0f;
 		[Tooltip("How far in degrees can you move the camera down")]
@@ -88,10 +87,13 @@ namespace StarterAssets
 
 		private Animator _animator;
 		private CharacterController _controller;
-		private PlayerMovement _input;
+		private StarterAssetsInputs _input;
 		[SerializeField]
 		private GameObject _mainCamera;
+		[SerializeField]
+		private CinemachineVirtualCamera _followCamera;
 		private float _cameraAngle;
+		private PlayerInput _playerInput;
 
 		private const float _threshold = 0.01f;
 
@@ -106,24 +108,26 @@ namespace StarterAssets
 					_mainCamera.GetComponent<CinemachineBrain>().enabled = true;
 				}
 			}
-			
 		}
 
 		private void Start()
 		{
 			_hasAnimator = TryGetComponent(out _animator);
 			_controller = GetComponent<CharacterController>();
-			_input = GetComponent<PlayerMovement>();
+			_input = GetComponent<StarterAssetsInputs>();
+			_playerInput = GetComponent<PlayerInput>();
+
+			_playerInput.enabled = this.IsOwner;
 
 			AssignAnimationIDs();
 
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
+
 			if (this.IsOwner)
 			{
-				int n = CinemachineCore.Instance.VirtualCameraCount;
-				PlayerVirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>().m_Priority += n;
+				_followCamera.m_Priority += CinemachineCore.Instance.VirtualCameraCount;
 			}
 		}
 
@@ -132,52 +136,56 @@ namespace StarterAssets
 			_hasAnimator = TryGetComponent(out _animator);
 			if (this.IsOwner)
 			{
-				float inputX = Input.GetAxis("Horizontal");
-				float inputY = Input.GetAxis("Vertical");
-				SetMoveInputServerRpc(inputX, inputY);
+				_cameraAngle = _mainCamera.transform.eulerAngles.y;
+				//float inputX = Input.GetAxis("Horizontal");
+				//float inputY = Input.GetAxis("Vertical");
+				//_input.move = new Vector2(inputX, inputY);
 
-				float mouseInputX = Input.GetAxis("Mouse X") * 300;
-				float mouseInputY = Input.GetAxis("Mouse Y") * 300;
-				_input.look = new Vector2(mouseInputX, mouseInputY);
-				SetJumpInputServerRpc(Input.GetKeyDown(KeyCode.Space));
-                SetCameraAngleServerRpc(_mainCamera.transform.eulerAngles.y);
-                //Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
-                //Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + mouseInputX + "y:" + mouseInputY);
 
-            }
+				//float mouseInputX = Input.GetAxis("Mouse X") * 300;
+				//float mouseInputY = Input.GetAxis("Mouse Y") * 300;
+				//_input.look = new Vector2(mouseInputX, mouseInputY);
+				//SetJumpInputServerRpc(Input.GetKeyDown(KeyCode.Space));
+				//SetCameraAngleServerRpc(_mainCamera.transform.eulerAngles.y);
+				Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
+				//Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + mouseInputX + "y:" + mouseInputY);
 
-			if (this.IsServer)
-			{
-				JumpAndGravity();
-				GroundedCheck();
-				Move();
-				//Debug.Log("id:"+ transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
 			}
+
+			//if (this.IsServer)
+			//{
+			//	JumpAndGravity();
+			//	GroundedCheck();
+			//	Move();
+			//	//Debug.Log("id:"+ transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
+			//}
+			JumpAndGravity();
+			GroundedCheck();
+			Move();
+		}
+
+		//[Unity.Netcode.ServerRpc]
+		//public void SetJumpInputServerRpc(bool newJumpState)
+		//{
+		//	_input.jump = newJumpState;
+		//}
+
+		//[Unity.Netcode.ServerRpc]
+		//public void SetSprintInputServerRpc(bool newSprintState)
+		//{
+		//	_input.sprint = newSprintState;
+		//}
+
+		[Unity.Netcode.ServerRpc]
+		public void AnimatorSetFloatServerRpc(int id, float val)
+		{
+			_animator.SetFloat(id, val);
 		}
 
 		[Unity.Netcode.ServerRpc]
-		private void SetMoveInputServerRpc(float dirX, float dirY)
-        {
-            _input.move = new Vector2(dirX,dirY);
-        }
-
-		[Unity.Netcode.ServerRpc]
-		private void SetCameraAngleServerRpc(float angleY)
+		public void AnimatorSetBoolServerRpc(int id, bool val)
 		{
-			_cameraAngle = angleY;
-
-		}
-
-		[Unity.Netcode.ServerRpc]
-		public void SetJumpInputServerRpc(bool newJumpState)
-		{
-			_input.jump = newJumpState;
-		}
-
-		[Unity.Netcode.ServerRpc]
-		public void SetSprintInputServerRpc(bool newSprintState)
-		{
-			_input.sprint = newSprintState;
+			_animator.SetBool(id, val);
 		}
 
 
@@ -207,7 +215,10 @@ namespace StarterAssets
 			// update animator if using character
 			if (_hasAnimator)
 			{
-				_animator.SetBool(_animIDGrounded, Grounded);
+				if (this.IsOwner)
+				{
+					AnimatorSetBoolServerRpc(_animIDGrounded, Grounded);
+				}
 			}
 		}
 
@@ -286,8 +297,11 @@ namespace StarterAssets
 			// update animator if using character
 			if (_hasAnimator)
 			{
-				_animator.SetFloat(_animIDSpeed, _animationBlend);
-				_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+				if (this.IsOwner)
+				{
+					AnimatorSetFloatServerRpc(_animIDSpeed, _animationBlend);
+					AnimatorSetFloatServerRpc(_animIDMotionSpeed, inputMagnitude);
+				}
 			}
 		}
 
@@ -301,8 +315,11 @@ namespace StarterAssets
 				// update animator if using character
 				if (_hasAnimator)
 				{
-					_animator.SetBool(_animIDJump, false);
-					_animator.SetBool(_animIDFreeFall, false);
+					if (this.IsOwner)
+					{
+						AnimatorSetBoolServerRpc(_animIDJump, false);
+						AnimatorSetBoolServerRpc(_animIDFreeFall, false);
+					}
 				}
 
 				// stop our velocity dropping infinitely when grounded
@@ -320,7 +337,10 @@ namespace StarterAssets
 					// update animator if using character
 					if (_hasAnimator)
 					{
-						_animator.SetBool(_animIDJump, true);
+						if (this.IsOwner)
+						{
+							AnimatorSetBoolServerRpc(_animIDJump, true);
+						}
 					}
 				}
 
@@ -345,7 +365,10 @@ namespace StarterAssets
 					// update animator if using character
 					if (_hasAnimator)
 					{
-						_animator.SetBool(_animIDFreeFall, true);
+						if (this.IsOwner)
+						{
+							AnimatorSetBoolServerRpc(_animIDFreeFall, true);
+						}
 					}
 				}
 

@@ -24,34 +24,34 @@ namespace StarterAssets
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 
-  //      public void OnMove(InputValue value)
-  //      {
-  //          MoveInput(value.Get<Vector2>());
-  //      }
+        public void OnMove(InputValue value)
+        {
+            MoveInput(value.Get<Vector2>());
+        }
 
-  //      public void OnLook(InputValue value)
-		//{
-		//	if(cursorInputForLook)
-		//	{
-		//		LookInput(value.Get<Vector2>());
-		//	}
-		//}
+        public void OnLook(InputValue value)
+        {
+            if (cursorInputForLook)
+            {
+                LookInput(value.Get<Vector2>());
+            }
+        }
 
-		//public void OnJump(InputValue value)
-		//{
-		//	SetJumpInputServerRpc(value.isPressed);
-		//}
+        public void OnJump(InputValue value)
+        {
+			JumpInput(value.isPressed);
+        }
 
-		//public void OnSprint(InputValue value)
-		//{
-		//	SetSprintInputServerRpc(value.isPressed);
-		//}
+        public void OnSprint(InputValue value)
+        {
+			SprintInput(value.isPressed);
+        }
 #else
 	// old input sys if we do decide to have it (most likely wont)...
 #endif
 
 
-		public void MoveInput(Vector2 newMoveDirection)
+        public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		}
