@@ -10,7 +10,6 @@ public class NetworkUI : MonoBehaviour
 {
     public TMP_InputField hostSteamID;
     public TextMeshProUGUI ownerSteamID;
-    public Netcode.Transports.Facepunch.FacepunchTransport facepunchTransport;
     bool showID = false;
     public void StartHost()
     {
@@ -25,13 +24,12 @@ public class NetworkUI : MonoBehaviour
 
     public void StartClient()
     {
-        facepunchTransport.targetSteamId = ulong.Parse(hostSteamID.text);
         Unity.Netcode.NetworkManager.Singleton.StartClient();
     }
 
     public void ShowSteamID()
     {
-        ownerSteamID.text = "Your Steam ID:" + facepunchTransport.GetUserSteamID();
+        ownerSteamID.text = "Your Steam ID:" + SteamClient.SteamId;
     }
 
     private void Start()
@@ -40,7 +38,7 @@ public class NetworkUI : MonoBehaviour
 
     private void Update()
     {
-        if (facepunchTransport.GetUserSteamID() != 0 && showID == false)
+        if (SteamClient.SteamId != 0 && showID == false)
         {
             ShowSteamID();
             showID = true;

@@ -5,6 +5,7 @@ using Steamworks;
 
 public class VoiceChat : MonoBehaviour
 {
+    bool pushToTalk = false;
     AudioSource source;
     AudioClip clip;
     int writeHead;
