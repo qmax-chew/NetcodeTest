@@ -147,7 +147,7 @@ namespace StarterAssets
 				//_input.look = new Vector2(mouseInputX, mouseInputY);
 				//SetJumpInputServerRpc(Input.GetKeyDown(KeyCode.Space));
 				//SetCameraAngleServerRpc(_mainCamera.transform.eulerAngles.y);
-				Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
+				//Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + _input.move.x + "y:" + _input.move.y);
 				//Debug.Log("id:" + transform.parent.GetComponent<NetworkObject>().NetworkObjectId + "x:" + mouseInputX + "y:" + mouseInputY);
 
 			}
