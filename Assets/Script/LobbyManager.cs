@@ -145,7 +145,7 @@ public class LobbyManager : Singleton<LobbyManager>
     //    };
     //}
 
-    public async Task<bool> LobbySendMessage(string msg)
+    public bool LobbySendMessage(string msg)
     {
         try
         {

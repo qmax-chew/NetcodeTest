@@ -32,7 +32,7 @@ public class LobbyUI : MonoBehaviour
         {
             var newLine = Instantiate(chatLine);
             newLine.GetComponent<TextMeshProUGUI>().text = member + ":" + message;
-            newLine.transform.parent = chatBoxContent;
+            newLine.transform.SetParent(chatBoxContent,false);
             Debug.Log($"{member}: {message}");
         };
     }
@@ -101,13 +101,9 @@ public class LobbyUI : MonoBehaviour
         button.interactable = true;
     }
 
-    async public void SendMessageUI()
+    public void SendMessageUI()
     {
         var text = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>();
-        var send = await lobbyManager.LobbySendMessage(text.text);
-        while (send != true)
-        {
-            await Task.Yield();
-        }
+        var send = lobbyManager.LobbySendMessage(text.text);
     }
 }
