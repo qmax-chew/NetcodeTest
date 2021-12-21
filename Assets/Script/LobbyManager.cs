@@ -189,9 +189,12 @@ public class LobbyManager : Singleton<LobbyManager>
 
     void OnLobbyGameCreatedCallback(Lobby lobby, uint ip, ushort port, SteamId steamId)
     {
-        AcceptP2P(steamId);
-        facepunchTransport.targetSteamId = steamId;
-        GameObject.FindGameObjectWithTag("UICamera").SetActive(false);
-        Unity.Netcode.NetworkManager.Singleton.StartClient();
+        if (currentLobby.GetGameServer(ref ip, ref port, ref steamId))
+        {
+            AcceptP2P(steamId);
+            facepunchTransport.targetSteamId = steamId;
+            GameObject.FindGameObjectWithTag("UICamera").SetActive(false);
+            Unity.Netcode.NetworkManager.Singleton.StartClient();
+        }
     }
 }
