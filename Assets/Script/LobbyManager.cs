@@ -80,6 +80,7 @@ public class LobbyManager : Singleton<LobbyManager>
         try
         {
             var joinLobby = await SteamMatchmaking.JoinLobbyAsync(selectedLobbyData.Id);
+            currentLobby = selectedLobbyData;
             Debug.Log("joined" + selectedLobbyData.Id);
 
         }
@@ -196,5 +197,11 @@ public class LobbyManager : Singleton<LobbyManager>
             GameObject.FindGameObjectWithTag("UICamera").SetActive(false);
             Unity.Netcode.NetworkManager.Singleton.StartClient();
         }
+    }
+
+    public void LeaveLobby()
+    {
+        currentLobby.Leave();
+        SteamNetworking.CloseP2PSessionWithUser(OpponentSteamId);
     }
 }

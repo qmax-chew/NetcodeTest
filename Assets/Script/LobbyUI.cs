@@ -67,7 +67,7 @@ public class LobbyUI : MonoBehaviour
                 t.gameObject.SetActive(true);
                 foreach (KeyValuePair<string, string> kvp in lobbyManager.lobbyList[index].Data)
                 {
-                    g.GetComponentInChildren<Text>().text = kvp.Key;
+                    g.GetComponentInChildren<Text>().text = kvp.Value;
                 }
                    
                 t.GetComponentInChildren<TextMeshProUGUI>().text = lobbyManager.lobbyList[index].MemberCount + "/"+ lobbyManager.lobbyList[index].MaxMembers;
