@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using TMPro;
 using Steamworks;
+using StarterAssets;
+
 
 
 public class LobbyUI : MonoBehaviour
@@ -15,8 +17,12 @@ public class LobbyUI : MonoBehaviour
     public GameObject lobbyListPrefab;
     public int currentPage = 1;
 
+
+    [SerializeField] private TMP_InputField chatInput;
     [SerializeField] private Transform chatBoxContent;
     [SerializeField] private GameObject chatLine;
+    private bool isTyping = false;
+
 
     // Start is called before the first frame update
     void Start()
@@ -31,16 +37,35 @@ public class LobbyUI : MonoBehaviour
         SteamMatchmaking.OnChatMessage += (lobby, member, message) =>
         {
             var newLine = Instantiate(chatLine);
-            newLine.GetComponent<TextMeshProUGUI>().text = member + ":" + message;
+            newLine.GetComponent<TextMeshProUGUI>().text = member.Name + ":" + message;
             newLine.transform.SetParent(chatBoxContent,false);
             Debug.Log($"{member}: {message}");
         };
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        Chat();
+    }
+
+    private void Chat()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            if (UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject != chatInput.gameObject)
+            {
+                chatInput.Select();
+                chatInput.ActivateInputField();
+                isTyping = true;
+            }
+            else
+            {
+                SendMessageUI();
+            }
+        }
+       
     }
 
     async public void RefreshLobbyList()
@@ -103,7 +128,12 @@ public class LobbyUI : MonoBehaviour
 
     public void SendMessageUI()
     {
-        var text = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>();
-        var send = lobbyManager.LobbySendMessage(text.text);
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        chatInput.DeactivateInputField();
+        lobbyManager.LobbySendMessage(chatInput.text);
+        chatInput.text = "";
+        isTyping = false;
     }
+
+
 }

@@ -18,6 +18,7 @@ public class NetworkUI : MonoBehaviour
 
     public void StartHost()
     {
+        //GameObject.FindGameObjectWithTag("UICamera").SetActive(false);
         Unity.Netcode.NetworkManager.Singleton.StartHost();
         
     }
@@ -29,10 +30,11 @@ public class NetworkUI : MonoBehaviour
 
     public void StartClient()
     {
-        if (facepunchTransport != null)
-        {
-            facepunchTransport.targetSteamId = ulong.Parse(hostSteamID.text);
-        }
+        //if (facepunchTransport != null)
+        //{
+        //    facepunchTransport.targetSteamId = ulong.Parse(hostSteamID.text);
+        //}
+        //GameObject.FindGameObjectWithTag("UICamera").SetActive(false);
         Unity.Netcode.NetworkManager.Singleton.StartClient();
     }
 

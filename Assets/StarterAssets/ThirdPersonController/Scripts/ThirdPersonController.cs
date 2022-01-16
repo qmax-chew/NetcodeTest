@@ -94,6 +94,7 @@ namespace StarterAssets
 		private CinemachineVirtualCamera _followCamera;
 		private float _cameraAngle;
 		private PlayerInput _playerInput;
+		private LobbyUI _lobbyUI;
 
 		private const float _threshold = 0.01f;
 
@@ -103,10 +104,12 @@ namespace StarterAssets
 		{
 			if (this.IsOwner)
             {
+				_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 				if (_mainCamera != null)
 				{
 					_mainCamera.GetComponent<CinemachineBrain>().enabled = true;
 				}
+				_lobbyUI = GameObject.FindGameObjectWithTag("LobbyUI").GetComponent<LobbyUI>();
 			}
 		}
 
@@ -127,7 +130,9 @@ namespace StarterAssets
 
 			if (this.IsOwner)
 			{
-				_followCamera.m_Priority += CinemachineCore.Instance.VirtualCameraCount;
+				_followCamera = GameObject.FindGameObjectWithTag("FollowCamera").GetComponent<CinemachineVirtualCamera>();
+				_followCamera.Follow = CinemachineCameraTarget.transform;
+				//_followCamera.m_Priority += CinemachineCore.Instance.VirtualCameraCount;
 			}
 		}
 
@@ -196,6 +201,7 @@ namespace StarterAssets
 				CameraRotation();
 			}
 		}
+			
 
 		private void AssignAnimationIDs()
 		{

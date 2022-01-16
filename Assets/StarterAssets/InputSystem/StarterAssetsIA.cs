@@ -64,6 +64,15 @@ namespace StarterAssets
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Chat"",
+                    ""type"": ""Button"",
+                    ""id"": ""b87b98f3-74d0-4e79-8c00-66a4826b8780"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -242,6 +251,28 @@ namespace StarterAssets
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""158933d7-0c8f-4e2c-a85a-a53097a671cb"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyboardMouse"",
+                    ""action"": ""Chat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""662fa8aa-1634-4788-876e-4de3c8453861"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Chat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -302,6 +333,7 @@ namespace StarterAssets
             m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
             m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+            m_Player_Chat = m_Player.FindAction("Chat", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -365,6 +397,7 @@ namespace StarterAssets
         private readonly InputAction m_Player_Look;
         private readonly InputAction m_Player_Jump;
         private readonly InputAction m_Player_Sprint;
+        private readonly InputAction m_Player_Chat;
         public struct PlayerActions
         {
             private @StarterAssetsIA m_Wrapper;
@@ -373,6 +406,7 @@ namespace StarterAssets
             public InputAction @Look => m_Wrapper.m_Player_Look;
             public InputAction @Jump => m_Wrapper.m_Player_Jump;
             public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+            public InputAction @Chat => m_Wrapper.m_Player_Chat;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -394,6 +428,9 @@ namespace StarterAssets
                     @Sprint.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
                     @Sprint.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
                     @Sprint.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
+                    @Chat.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChat;
+                    @Chat.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChat;
+                    @Chat.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChat;
                 }
                 m_Wrapper.m_PlayerActionsCallbackInterface = instance;
                 if (instance != null)
@@ -410,6 +447,9 @@ namespace StarterAssets
                     @Sprint.started += instance.OnSprint;
                     @Sprint.performed += instance.OnSprint;
                     @Sprint.canceled += instance.OnSprint;
+                    @Chat.started += instance.OnChat;
+                    @Chat.performed += instance.OnChat;
+                    @Chat.canceled += instance.OnChat;
                 }
             }
         }
@@ -456,6 +496,7 @@ namespace StarterAssets
             void OnLook(InputAction.CallbackContext context);
             void OnJump(InputAction.CallbackContext context);
             void OnSprint(InputAction.CallbackContext context);
+            void OnChat(InputAction.CallbackContext context);
         }
     }
 }

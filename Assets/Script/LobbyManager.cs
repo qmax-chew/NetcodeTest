@@ -161,6 +161,7 @@ public class LobbyManager : Singleton<LobbyManager>
         }
     }
 
+
     void OnLobbyMemberJoinedCallback(Lobby lobby, Friend friend)
     {
         Debug.Log("someone else joined lobby");

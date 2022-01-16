@@ -12,6 +12,7 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+		public bool chat;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -46,22 +47,20 @@ namespace StarterAssets
         {
 			SprintInput(value.isPressed);
         }
+
+		public void OnChat(InputValue value)
+		{
+			ChatInput(value.isPressed);
+		}
 #else
 	// old input sys if we do decide to have it (most likely wont)...
 #endif
 
 
-        public void MoveInput(Vector2 newMoveDirection)
+		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		}
-
-		[Unity.Netcode.ServerRpc]
-		private void SetMoveInputServerRpc(Vector2 newMoveDirection)
-		{
-			move = newMoveDirection;
-		}
-
 
 		public void LookInput(Vector2 newLookDirection)
 		{
@@ -88,6 +87,11 @@ namespace StarterAssets
 		public void SprintInput(bool newSprintState)
 		{
 			sprint = newSprintState;
+		}
+
+		public void ChatInput(bool newChatState)
+		{
+			chat = newChatState;
 		}
 
 #if !UNITY_IOS || !UNITY_ANDROID
