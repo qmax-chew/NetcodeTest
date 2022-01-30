@@ -109,7 +109,7 @@ public class LobbyManager : Singleton<LobbyManager>
         try
         {
             lobbyList.Clear();
-            Lobby[] lobbies = await SteamMatchmaking.LobbyList.FilterDistanceClose().RequestAsync();
+            Lobby[] lobbies = await SteamMatchmaking.LobbyList.FilterDistanceWorldwide().RequestAsync();
             if (lobbies != null)
             {
                 foreach (Lobby lobby in lobbies)

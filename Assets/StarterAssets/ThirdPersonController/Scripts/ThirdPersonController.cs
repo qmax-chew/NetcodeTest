@@ -95,6 +95,7 @@ namespace StarterAssets
 		private float _cameraAngle;
 		private PlayerInput _playerInput;
 		private LobbyUI _lobbyUI;
+		private RPCWrapper rpcWrapper;
 
 		private const float _threshold = 0.01f;
 
@@ -102,15 +103,12 @@ namespace StarterAssets
 
 		private void Awake()
 		{
-			if (this.IsOwner)
-            {
-				_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-				if (_mainCamera != null)
-				{
-					_mainCamera.GetComponent<CinemachineBrain>().enabled = true;
-				}
-				_lobbyUI = GameObject.FindGameObjectWithTag("LobbyUI").GetComponent<LobbyUI>();
+			_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+			if (_mainCamera != null)
+			{
+				_mainCamera.GetComponent<CinemachineBrain>().enabled = true;
 			}
+			_lobbyUI = GameObject.FindGameObjectWithTag("LobbyUI").GetComponent<LobbyUI>();
 		}
 
 		private void Start()
@@ -181,14 +179,14 @@ namespace StarterAssets
 		//	_input.sprint = newSprintState;
 		//}
 
-		[Unity.Netcode.ServerRpc]
-		public void AnimatorSetFloatServerRpc(int id, float val)
+		//[Unity.Netcode.ServerRpc]
+		public void AnimatorSetFloat(int id, float val)
 		{
 			_animator.SetFloat(id, val);
 		}
 
-		[Unity.Netcode.ServerRpc]
-		public void AnimatorSetBoolServerRpc(int id, bool val)
+		//[Unity.Netcode.ServerRpc]
+		public void AnimatorSetBool(int id, bool val)
 		{
 			_animator.SetBool(id, val);
 		}
@@ -223,7 +221,7 @@ namespace StarterAssets
 			{
 				if (this.IsOwner)
 				{
-					AnimatorSetBoolServerRpc(_animIDGrounded, Grounded);
+					ExecuteActionServerRpc(() => AnimatorSetBool(_animIDGrounded, Grounded));
 				}
 			}
 		}
@@ -305,8 +303,10 @@ namespace StarterAssets
 			{
 				if (this.IsOwner)
 				{
-					AnimatorSetFloatServerRpc(_animIDSpeed, _animationBlend);
-					AnimatorSetFloatServerRpc(_animIDMotionSpeed, inputMagnitude);
+					ExecuteActionServerRpc(() => AnimatorSetFloat(_animIDSpeed, _animationBlend));
+					ExecuteActionServerRpc(() => AnimatorSetFloat(_animIDMotionSpeed, inputMagnitude));
+					//AnimatorSetFloat(_animIDSpeed, _animationBlend);
+					//AnimatorSetFloat(_animIDMotionSpeed, inputMagnitude);
 				}
 			}
 		}
@@ -323,8 +323,8 @@ namespace StarterAssets
 				{
 					if (this.IsOwner)
 					{
-						AnimatorSetBoolServerRpc(_animIDJump, false);
-						AnimatorSetBoolServerRpc(_animIDFreeFall, false);
+						ExecuteActionServerRpc(() => AnimatorSetBool(_animIDJump, false));
+						ExecuteActionServerRpc(() => AnimatorSetBool(_animIDFreeFall, false));
 					}
 				}
 
@@ -345,7 +345,7 @@ namespace StarterAssets
 					{
 						if (this.IsOwner)
 						{
-							AnimatorSetBoolServerRpc(_animIDJump, true);
+							ExecuteActionServerRpc(() => AnimatorSetBool(_animIDJump, true));
 						}
 					}
 				}
@@ -373,7 +373,7 @@ namespace StarterAssets
 					{
 						if (this.IsOwner)
 						{
-							AnimatorSetBoolServerRpc(_animIDFreeFall, true);
+							AnimatorSetBool(_animIDFreeFall, true);
 						}
 					}
 				}
@@ -407,5 +407,11 @@ namespace StarterAssets
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
 		}
+
+		//[Unity.Netcode.ServerRpc]
+		//public void ExecuteActionServerRpc(System.Action func)
+		//{
+		//	func();
+		//}
 	}
 }
